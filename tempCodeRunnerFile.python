@@ -1,0 +1,319 @@
+# %% [markdown]
+# # NumPy & Pandas — Hands-On Notebook
+# 
+# **Data Science Foundations**
+# 
+# This notebook is fully runnable. Run each cell top-to-bottom with **Shift + Enter**.
+# All sample data is created inside the notebook, so you do **not** need any external files.
+# 
+# **How to use**
+# 1. Read the short explanation in each markdown cell.
+# 2. Run the code cell below it and read the output.
+# 3. Try the *Your turn* exercises at the end.
+
+# %% [markdown]
+# ## 0. Setup — import the libraries
+# 
+# The standard short names are `np` for NumPy and `pd` for Pandas.
+# If the import fails, install them first by running, in a cell:
+# `!pip install numpy pandas`
+
+# %%
+import numpy as np
+import pandas as pd
+
+print("NumPy version :", np.__version__)
+print("Pandas version:", pd.__version__)
+
+# %% [markdown]
+# # Part 1 — NumPy (Numerical Python)
+
+# %% [markdown]
+# ## 1.1 Creating arrays
+# NumPy's core object is the **ndarray** — a fast, fixed-type array.
+
+# %%
+a = np.array([1, 2, 3, 4])           # from a list
+b = np.array([[1, 2], [3, 4]])       # 2-D array (matrix)
+zeros = np.zeros((2, 3))             # 2x3 of zeros
+ones = np.ones(3)                    # [1. 1. 1.]
+rng = np.arange(0, 10, 2)            # [0 2 4 6 8]
+lin = np.linspace(0, 1, 7)           # 5 evenly spaced numbers 0..1
+
+print("a    =", a)
+print("b    =\n", b)
+print("zeros=\n", zeros)
+print("rng  =", rng)
+print("lin  =", lin)
+
+print(type(rng))
+
+# %% [markdown]
+# ## 1.2 Array attributes — know your data
+# `shape` is the attribute you will check most often.
+
+# %%
+b = np.array([[1, 2, 3], [4, 5, 6]])
+print("shape:", b.shape)   # (2, 3) -> 2 rows, 3 columns
+print("ndim :", b.ndim)    # 2 dimensions
+print("size :", b.size)    # 6 elements
+print("dtype:", b.dtype)   # data type
+
+# %% [markdown]
+# ## 1.3 Indexing & slicing
+# Indexing starts at 0. In a slice `start:stop`, the **stop is excluded**.
+
+# %%
+a = np.array([10, 20, 30, 40, 50])
+print(a[0])      # 10  first element
+print(a[-1])     # 50  last element
+print(a[1:4])    # [20 30 40]
+
+m = np.array([[1, 2, 3], [4, 5, 6]])
+print(m[0, 2])   # 3  -> row 0, column 2
+print(m[:, 1])   # [2 5] -> all rows, column 1
+
+# %% [markdown]
+# ## 1.4 Boolean masking (filtering)
+# Select elements with a condition — the heart of data filtering.
+
+# %%
+a = np.array([5, 12, 7, 20, 3])
+print(a > 10)        # [False  True False  True False]
+print(a[a > 10])     # [12 20]  keep only values > 10
+
+a[a < 5] = 0         # replace values < 5 with 0
+print(a)             # [ 5 12  7 20  0]
+
+# %% [markdown]
+# ## 1.5 Vectorized maths & broadcasting
+# Operations apply to every element automatically — no loops.
+
+# %%
+a = np.array([1, 2, 3])
+print(a + 10)    # [11 12 13]
+print(a * 2)     # [2 4 6]
+print(a ** 2)    # [1 4 9]
+
+b = np.array([10, 20, 30])
+print(a + b)     # [11 22 33]  element-by-element
+
+# %% [markdown]
+# ## 1.6 Aggregations & the `axis` idea
+# - `axis=0` collapses **rows** -> one value per **column** (vertical)
+# - `axis=1` collapses **columns** -> one value per **row** (horizontal)
+
+# %%
+m = np.array([[1, 2, 3], [4, 5, 6]])
+print("total      :", m.sum())          # 21
+print("col totals :", m.sum(axis=0))    # [5 7 9]
+print("row totals :", m.sum(axis=1))    # [ 6 15]
+print("mean       :", m.mean())         # 3.5
+print("max, min   :", m.max(), m.min()) # 6 1
+print("std        :", round(m.std(), 3))
+
+# %% [markdown]
+# ## 1.7 Reshaping arrays
+
+# %%
+a = np.arange(6)          # [0 1 2 3 4 5]
+m = a.reshape(2, 3)
+print("reshaped:\n", m)
+print("flatten :", m.flatten())
+print("transpose:\n", m.T)
+
+# %% [markdown]
+# # Part 2 — Pandas (Data Analysis)
+
+# %% [markdown]
+# ## 2.1 Series — a single labelled column
+
+# %%
+marks = pd.Series([88, 76, 92], index=['Asha', 'Ravi', 'Meena'])
+print(marks)
+print("Ravi's marks:", marks['Ravi'])
+print("Average     :", round(marks.mean(), 2))
+
+# %% [markdown]
+# ## 2.2 DataFrame — the data table
+# We build a small students table to use for the rest of the notebook.
+
+# %%
+data = {
+    'Name':  ['Asha', 'Ravi', 'Meena', 'John', 'Sara', 'Vikram'],
+    'Age':   [21, 22, 20, 23, 21, 22],
+    'City':  ['Delhi', 'Mumbai', 'Delhi', 'Pune', 'Mumbai', 'Pune'],
+    'Marks': [88, 76, 92, 60, 81, 73],
+}
+df = pd.DataFrame(data)
+df
+
+# %% [markdown]
+# ## 2.3 Inspecting your data first
+# Golden rule: **never analyse data you haven't looked at.**
+
+# %%
+print("Shape:", df.shape)      # (rows, columns)
+print()
+print(df.head(3))              # first 3 rows
+
+# %%
+df.info()
+
+# %%
+df.describe()      # count, mean, std, min, max for numeric columns
+
+# %% [markdown]
+# ## 2.4 Selecting columns and rows
+# - `loc` uses **labels**, `iloc` uses integer **positions**.
+
+# %%
+print(df['Name'])              # one column (a Series)
+print()
+print(df[['Name', 'Marks']])   # multiple columns (a DataFrame)
+
+# %%
+print(df.loc[0])               # row with label 0
+print()
+print(df.iloc[0])              # first row by position
+print()
+print("Row 0, Marks:", df.loc[0, 'Marks'])
+
+# %% [markdown]
+# ## 2.5 Filtering rows by condition
+# Use `&` (and) / `|` (or), and wrap each condition in parentheses.
+
+# %%
+print(df[df['Marks'] > 80])                          # high scorers
+print()
+print(df[(df['Marks'] > 80) & (df['Age'] < 22)])     # AND
+
+# %% [markdown]
+# ## 2.6 Adding, changing & dropping columns
+
+# %%
+df['Result'] = df['Marks'].apply(lambda m: 'Pass' if m >= 35 else 'Fail')
+df['Bonus']  = df['Marks'] + 5
+display(df.head())
+
+df2 = df.drop('Bonus', axis=1)        # remove a column (keeps df intact)
+print("Columns after drop:", list(df2.columns))
+
+# %% [markdown]
+# ## 2.7 Handling missing data
+# Real data has gaps shown as `NaN`. Let's create one and fix it.
+
+# %%
+dirty = df.copy()
+dirty.loc[2, 'Marks'] = np.nan        # introduce a missing value
+print("Missing per column:")
+print(dirty.isnull().sum())
+print()
+
+# Fill the missing mark with the column average
+dirty['Marks'] = dirty['Marks'].fillna(dirty['Marks'].mean())
+print("After fillna:")
+print(dirty[['Name', 'Marks']])
+
+# %% [markdown]
+# ## 2.8 Sorting
+
+# %%
+print(df.sort_values('Marks', ascending=False))    # highest first
+
+# %% [markdown]
+# ## 2.9 GroupBy — split, apply, combine
+# Answers questions like *'average marks per city'*.
+
+# %%
+print("Average marks per city:")
+print(df.groupby('City')['Marks'].mean())
+print()
+print("Multiple stats at once:")
+print(df.groupby('City')['Marks'].agg(['mean', 'max', 'min', 'count']))
+
+# %% [markdown]
+# ## 2.10 value_counts & unique
+
+# %%
+print(df['City'].value_counts())   # how many rows per city
+print()
+print("Distinct cities:", df['City'].unique())
+print("Number of cities:", df['City'].nunique())
+
+# %% [markdown]
+# ## 2.11 apply & map — custom transformations
+
+# %%
+def grade(score):
+    if score >= 90:
+        return 'A'
+    elif score >= 75:
+        return 'B'
+    else:
+        return 'C'
+
+df['Grade'] = df['Marks'].apply(grade)
+df[['Name', 'Marks', 'Grade']]
+
+# %% [markdown]
+# ## 2.12 Reading & writing files (CSV round-trip)
+# Pandas reads/writes files in one line. Here we save our table and read it back.
+
+# %%
+df.to_csv('students_demo.csv', index=False)   # save
+print("Saved students_demo.csv")
+
+loaded = pd.read_csv('students_demo.csv')      # read back
+loaded.head()
+
+# %% [markdown]
+# ## 2.13 Mini end-to-end example
+# The everyday data-science loop: **load -> inspect -> clean -> feature -> group -> save.**
+
+# %%
+# 1. Load (we reuse the file we just wrote)
+data = pd.read_csv('students_demo.csv')
+
+# 2. Inspect
+print("Shape:", data.shape)
+
+# 3. Clean (fill any missing marks with the average)
+data['Marks'] = data['Marks'].fillna(data['Marks'].mean())
+
+# 4. Feature (add a Pass/Fail column)
+data['Result'] = data['Marks'].apply(lambda m: 'Pass' if m >= 35 else 'Fail')
+
+# 5. Analyse (average marks per city)
+summary = data.groupby('City')['Marks'].mean()
+print("\nAverage marks per city:")
+print(summary)
+
+# 6. Save the cleaned result
+data.to_csv('students_cleaned.csv', index=False)
+print("\nSaved students_cleaned.csv")
+
+# %% [markdown]
+# # Part 3 — Your Turn (Practice)
+# 
+# Try these in the empty cells below. Solutions are not provided — experiment!
+# 
+# **NumPy**
+# 1. Create an array of numbers 1 to 10; print its sum and mean.
+# 2. Make a 3x3 array of zeros, then set the middle element to 5.
+# 3. From `[4, 9, 16, 25]`, print the square root of each element (`np.sqrt`).
+# 4. From `[12, 5, 18, 3, 21]`, keep only values greater than 10.
+# 
+# **Pandas**
+# 5. Build a DataFrame of 4 students (Name, Age, Marks).
+# 6. Show students whose marks are above 75.
+# 7. Add a `Result` column: Pass (>=35) or Fail.
+# 8. Group an employee DataFrame by `Department` and find the average salary.
+
+# %%
+# Your code here
+
+# %%
+# Your code here
+
+
